@@ -5,6 +5,7 @@ import { auth, db } from "@/lib/firebase";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, signOut } from "firebase/auth";
 import { collection, query, where, getDocs } from "firebase/firestore"; 
 import { useRouter } from "next/navigation";
+import toast from 'react-hot-toast';
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -39,10 +40,10 @@ export default function LoginPage() {
 
         if (!querySnapshot.empty) {
           sessionStorage.setItem("isAdmin", "true");
-          alert("Selamat datang kembali, Admin Panda! 🐼");
+          toast.success("Selamat datang kembali, Kanjeng");
           router.push("/admin/dashboard");
         } else {
-          alert("Berhasil Sign In!");
+          toast.success("Berhasil Sign In!");
           router.push("/");
         }
 
@@ -57,7 +58,7 @@ export default function LoginPage() {
         // Logout langsung setelah register agar tidak otomatis masuk
         await signOut(auth);
 
-        alert("Registrasi berhasil! Kami telah mengirimkan link verifikasi ke email Anda. Harap verifikasi sebelum Sign In.");
+        toast("Registrasi berhasil! Kami telah mengirimkan link verifikasi ke email Anda. Harap verifikasi sebelum Sign In.");
         setIsLogin(true); 
       }
     } catch (err: any) {
@@ -76,7 +77,7 @@ export default function LoginPage() {
             {isLogin ? "Sign In" : "Create Account"}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            {isLogin ? "Welcome back to Nature's Shop." : "Join us for exclusive offers and more."}
+            {isLogin ? "Welcome back to Lara Fragrance." : "Join us for exclusive offers and more."}
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>

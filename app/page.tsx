@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 import { db } from "@/lib/firebase";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
-import AdPopup from "@/components/adPopup"; // Import komponen pop-up
+import AdPopup from "@/components/adPopup";
+import toast from 'react-hot-toast';
 
 const ProductSkeleton = () => (
   <div className="flex flex-col bg-white p-2 shadow-sm rounded-sm">
@@ -22,7 +23,6 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("All"); 
 
-  // 1. STATE UNTUK SLIDER
   const [currentSlide, setCurrentSlide] = useState(0);
   const banners = [
     "/images/banner.jpg", 
@@ -30,7 +30,6 @@ export default function Home() {
     "/images/banner3.jpg"
   ];
 
-  // 2. EFEK UNTUK GESER OTOMATIS TIAP 3 DETIK
   useEffect(() => {
     const slideInterval = setInterval(() => {
       setCurrentSlide((prev) => (prev === banners.length - 1 ? 0 : prev + 1));
@@ -56,6 +55,7 @@ export default function Home() {
         setProducts(data);
       } catch (error) {
         console.error("Gagal mengambil data produk:", error);
+        toast.error("Gagal memuat produk");
       } finally {
         setLoading(false);
       }
@@ -69,17 +69,21 @@ export default function Home() {
     return product.gender === activeTab;
   });
 
+  // FUNGSI HANDLE ADD TO CART DENGAN TOAST
+  const handleAddToCart = (product: any) => {
+    addToCart(product);
+    toast.success(`${product.name} dimasukkan ke keranjang!`);
+  };
+
   return (
     <div className="min-h-screen bg-pink-50">
       
-      {/* PANGGIL KOMPONEN POP-UP DI SINI */}
       <AdPopup />
 
       <main className="max-w-7xl mx-auto px-4 py-8 md:px-8">
         
-        {/* HERO BANNER SECTION (Full Width Slider) */}
+        {/* HERO BANNER SECTION */}
         <div className="relative mb-12 overflow-hidden rounded-sm mx-auto max-w-[851px] h-[150px] sm:h-[200px] md:h-[315px]">
-          {/* Wadah yang bergerak ke kiri/kanan */}
           <div 
             className="absolute inset-0 flex transition-transform duration-700 ease-in-out"
             style={{ transform: `translateX(-${currentSlide * 100}%)` }}
@@ -94,7 +98,6 @@ export default function Home() {
             ))}
           </div>
 
-          {/* Titik-titik Navigasi (Dots) */}
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex space-x-2">
             {banners.map((_, index) => (
               <button
@@ -178,8 +181,9 @@ export default function Home() {
                       Rp {product.price?.toLocaleString("id-ID")}
                     </p>
                     
+                    {/* TOMBOL ADD TO BAG YANG SUDAH DIPERBAIKI */}
                     <button 
-                      onClick={() => addToCart(product)}
+                      onClick={() => handleAddToCart(product)}
                       className="w-full border border-gray-900 bg-white text-gray-900 text-xs md:text-sm font-bold py-3 uppercase tracking-widest transition duration-300 group-hover:bg-[#1a1a1a] group-hover:text-white"
                     >
                       ADD TO BAG

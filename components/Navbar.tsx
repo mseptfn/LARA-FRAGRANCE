@@ -77,9 +77,19 @@ export default function Navbar() {
           {/* LOGIKA CONDITIONAL LOGIN/LOGOUT */}
           {user ? (
             <div className="hidden md:flex items-center space-x-4">
-              <span className="text-[13px] font-bold tracking-wider uppercase text-[#000000]">
+              
+              {/* TOMBOL PESANAN SAYA - HANYA MUNCUL JIKA SUDAH LOGIN */}
+              <Link 
+                href="/track-order" 
+                className="text-[13px] font-bold tracking-wider uppercase text-[#004236] hover:text-black hover:underline transition"
+              >
+                Pesanan Saya
+              </Link>
+              
+              <span className="text-[13px] font-bold tracking-wider uppercase text-[#000000] border-l-2 border-gray-200 pl-4">
                 Hi, {user.email?.split('@')[0]}
               </span>
+              
               <button 
                 onClick={handleLogout} 
                 className="text-[11px] font-bold tracking-wider uppercase text-red-500 hover:text-red-700 transition hover:underline"
@@ -110,7 +120,7 @@ export default function Navbar() {
 
       {/* Navigation Categories */}
       <nav className="hidden md:flex justify-center space-x-10 py-3.5 border-t border-gray-100 bg-white">
-        {["New", "Body", "Fragrance", "Bundling", "Gifts"].map((item) => (
+        {["New", "Body", "Fragrance", "Bundling"].map((item) => (
           <Link 
             key={item} 
             href={`/${item.toLowerCase()}`} 

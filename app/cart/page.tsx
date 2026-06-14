@@ -6,6 +6,7 @@ import Script from "next/script";
 import { useCart } from "@/context/CartContext";
 import { auth, db } from "@/lib/firebase"; 
 import { doc, setDoc, serverTimestamp, updateDoc } from "firebase/firestore";
+import toast from 'react-hot-toast';
 
 export default function CartPage() {
   const { cart, removeFromCart, clearCart, totalPrice } = useCart();
@@ -37,7 +38,7 @@ export default function CartPage() {
 
   // Fungsi memanggil API Ongkir Biteship
   const checkOngkir = async () => {
-    if (shippingData.postalCode.length < 5) return alert("Masukkan kodepos yang valid (5 digit).");
+    if (shippingData.postalCode.length < 5) return toast("Masukkan kodepos yang valid (5 digit).");
     setIsFetchingRates(true);
 
     try {
@@ -62,10 +63,10 @@ export default function CartPage() {
       if (data.success && data.pricing.length > 0) {
         setShippingOptions(data.pricing);
       } else {
-        alert("Gagal menemukan layanan pengiriman untuk kodepos ini.");
+        toast.error("Gagal menemukan layanan pengiriman untuk kodepos ini.");
       }
     } catch (error) {
-      alert("Terjadi kesalahan saat mengecek ongkir.");
+      toast.error("Terjadi kesalahan saat mengecek ongkir.");
     } finally {
       setIsFetchingRates(false);
     }
@@ -74,16 +75,16 @@ export default function CartPage() {
   const finalTotal = totalPrice + (selectedShipping ? selectedShipping.price : 0);
 
   const handleCheckout = async () => {
-    if (cart.length === 0) return alert("Keranjang kosong!");
+    if (cart.length === 0) return toast("Keranjang kosong!");
     if (!auth.currentUser) {
       window.location.href = "/login";
       return;
     }
     if (!shippingData.fullName || !shippingData.phone || !shippingData.address || !shippingData.postalCode) {
-      return alert("Lengkapi data alamat.");
+      return toast("Lengkapi data alamat.");
     }
     if (!selectedShipping) {
-      return alert("Pilih kurir pengiriman terlebih dahulu.");
+      return toast("Pilih kurir pengiriman terlebih dahulu.");
     }
 
     setIsProcessing(true);
@@ -154,11 +155,11 @@ export default function CartPage() {
             window.location.href = "/track-order";
           },
           onPending: function () {
-            alert("Menunggu Pembayaran.");
+            toast("Menunggu Pembayaran.");
             setIsProcessing(false);
           },
           onError: function () {
-            alert("Pembayaran Gagal.");
+            toast.error("Pembayaran Gagal.");
             setIsProcessing(false);
           },
           onClose: function () {
@@ -166,11 +167,11 @@ export default function CartPage() {
           }
         });
       } else {
-        alert("Gagal memuat pembayaran.");
+        toast.error("Gagal memuat pembayaran.");
         setIsProcessing(false);
       }
     } catch (error) {
-      alert("Error sistem.");
+      toast.error("Error sistem.");
       setIsProcessing(false);
     }
   };
@@ -193,18 +194,18 @@ export default function CartPage() {
               
               {/* ITEM LIST */}
               <div className="bg-white p-6 md:p-8 rounded-[30px] shadow-sm">
-                <h2 className="text-lg font-extrabold text-gray-900 mb-4 uppercase border-b pb-4">Items</h2>
+                <h2 className="text-black font-extrabold text-gray-900 mb-4 uppercase border-b pb-4">Items</h2>
                 {cart.map((item) => (
                   <div key={item.id} className="flex justify-between items-center py-4 border-b last:border-0">
                     <div className="flex items-center gap-4">
                       <img src={item.image} alt={item.name} className="w-16 h-16 object-contain bg-gray-50 rounded" />
                       <div>
-                        <h3 className="font-bold text-sm">{item.name}</h3>
-                        <p className="text-xs text-gray-900">Qty: {item.quantity}</p>
+                        <h3 className="font-bold text-black">{item.name}</h3>
+                        <p className="text-xs text-black">Qty: {item.quantity}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-sm">Rp {(item.price * item.quantity).toLocaleString("id-ID")}</p>
+                      <p className="font-bold text-black">Rp {(item.price * item.quantity).toLocaleString("id-ID")}</p>
                       <button onClick={() => removeFromCart(item.id)} className="text-xs text-red-900 hover:underline">Remove</button>
                     </div>
                   </div>
@@ -221,7 +222,7 @@ export default function CartPage() {
                     value={shippingData.fullName} 
                     onChange={handleInputChange} 
                     placeholder="Nama Penerima" 
-                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-black placeholder-gray-500 outline-none focus:border-black" 
+                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text- text-black placeholder-gray-500 outline-none focus:border-black" 
                   />
                   <input 
                     type="text" 
@@ -285,7 +286,7 @@ export default function CartPage() {
               <h2 className="text-lg font-extrabold text-gray-900 mb-6 uppercase border-b pb-4">Summary</h2>
               <div className="flex justify-between mb-2 text-sm">
                 <span className="text-gray-900">Items Total</span>
-                <span className="font-bold">Rp {totalPrice.toLocaleString("id-ID")}</span>
+                <span className="font-bold text-black">Rp {totalPrice.toLocaleString("id-ID")}</span>
               </div>
               <div className="flex justify-between mb-4 text-sm">
                 <span className="text-gray-900">Shipping</span>
@@ -293,7 +294,7 @@ export default function CartPage() {
               </div>
               <div className="flex justify-between items-center border-t pt-4 mb-8">
                 <span className="font-bold text-gray-900 uppercase text-xs">Total Pay</span>
-                <span className="font-black text-xl">Rp {finalTotal.toLocaleString("id-ID")}</span>
+                <span className="font-black text-black">Rp {finalTotal.toLocaleString("id-ID")}</span>
               </div>
 
               <button onClick={handleCheckout} disabled={isProcessing} className="w-full bg-gray-900 text-white font-bold py-4 uppercase rounded-2xl disabled:bg-gray-400">
