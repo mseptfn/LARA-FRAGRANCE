@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { auth, db } from "@/lib/firebase";
-import { collection, query, where, getDocs, doc, updateDoc, orderBy } from "firebase/firestore";
+import { collection, query, where, getDocs, doc, updateDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
+import toast from 'react-hot-toast'; // Tambahan toast biar profesional
 
 export default function TrackOrderPage() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -63,9 +64,9 @@ export default function TrackOrderPage() {
           order.id === orderId ? { ...order, status: "delivered" } : order
         ));
         
-        alert("Terima kasih! Pesanan diselesaikan. Invoice sekarang dapat diunduh.");
+        toast.success("Terima kasih! Pesanan diselesaikan. Invoice sekarang dapat diunduh.");
       } catch (error) {
-        alert("Gagal memperbarui status.");
+        toast.error("Gagal memperbarui status.");
       }
     }
   };
@@ -162,6 +163,13 @@ export default function TrackOrderPage() {
                     <p className="text-xs text-gray-400">
                       {order.createdAt ? new Date(order.createdAt.toDate()).toLocaleDateString("id-ID", { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}
                     </p>
+                    {/* MENAMPILKAN RESI JIKA SUDAH DIINPUT ADMIN */}
+                    {order.trackingNumber && (
+                      <div className="mt-2 bg-gray-50 border border-gray-200 p-2 rounded-lg inline-block">
+                        <p className="text-[9px] uppercase font-bold text-gray-400 mb-0.5">No. Resi ({order.courier?.company})</p>
+                        <p className="text-xs font-mono font-black text-gray-800">{order.trackingNumber}</p>
+                      </div>
+                    )}
                   </div>
                   <div>{getStatusBadge(order.status)}</div>
                 </div>
@@ -195,8 +203,8 @@ export default function TrackOrderPage() {
                     </button>
                   )}
 
-                  {/* Tombol Terima Pesanan - Idealnya muncul saat status 'shipped', tapi ini dimunculkan di 'success' juga untuk keperluan testing bypass */}
-                  {(order.status === 'success' || order.status === 'shipped') && (
+                  {/* INI BAGIAN YANG DIREVISI: HANYA MUNCUL JIKA STATUS = SHIPPED */}
+                  {order.status === 'shipped' && (
                     <button 
                       onClick={() => handleOrderReceived(order.id)}
                       className="bg-[#004236] text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-[#002b23] transition ml-auto"
