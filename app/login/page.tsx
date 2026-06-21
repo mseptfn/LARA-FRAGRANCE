@@ -6,6 +6,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVe
 import { collection, query, where, getDocs } from "firebase/firestore"; 
 import { useRouter } from "next/navigation";
 import toast from 'react-hot-toast';
+import { updateProfile } from "firebase/auth";
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -48,9 +49,15 @@ export default function LoginPage() {
         }
 
       } else {
-        // === PROSES REGISTER ===
+
+// === PROSES REGISTER ===
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
+
+        // Simpan username ke Firebase Profile
+        await updateProfile(user, {
+          displayName: username // Pastikan Anda sudah membuat state untuk input username ini
+        });
 
         // Kirim Email Verifikasi
         await sendEmailVerification(user);

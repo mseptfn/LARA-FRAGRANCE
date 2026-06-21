@@ -185,7 +185,6 @@ export default function AdminDashboard() {
               {orders.filter(o => o.status === "success").length > 0 && <span className="absolute -top-1 -right-1 bg-red-660 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-black">{orders.filter(o => o.status === "success").length}</span>}
             </button>
             <button onClick={() => setActiveSection("reports")} className={`text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-xl transition ${activeSection === "reports" ? "bg-gray-900 text-white" : "text-gray-700 hover:bg-gray-200"}`}>Laporan Penjualan</button>
-            <button onClick={() => { sessionStorage.clear(); router.push("/admin/login"); }} className="text-xs font-bold text-red-600 uppercase tracking-widest hover:underline ml-2">Logout</button>
           </div>
         </div>
 

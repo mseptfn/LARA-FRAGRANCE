@@ -113,7 +113,7 @@ export default function TrackOrderPage() {
         productId: selectedItem.id || selectedItem.name, // Fallback ke name jika id produk tidak tersimpan di cart
         productName: selectedItem.name,
         userId: user.uid,
-        userName: user.email?.split('@')[0] || "Anonim",
+        userName: user.displayName || user.email?.split('@')[0] || "Anonim",
         rating: rating,
         comment: reviewText,
         createdAt: new Date()

@@ -87,7 +87,7 @@ export default function Navbar() {
               </Link>
               
               <span className="text-[13px] font-bold tracking-wider uppercase text-[#000000] border-l-2 border-gray-200 pl-4">
-                Hi, {user.email?.split('@')[0]}
+                Hi, {user.displayName || user.email?.split('@')[0]}
               </span>
               
               <button 
